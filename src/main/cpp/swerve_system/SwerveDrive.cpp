@@ -22,23 +22,12 @@ SwerveDrive::SwerveDrive()
       m_frontRight{kFrontRightDrivingCanId, kFrontRightTurningCanId,
                    kFrontRightChassisAngularOffset},
       m_rearRight{kRearRightDrivingCanId, kRearRightTurningCanId,
-                  kRearRightChassisAngularOffset},
-      m_odometry{kDriveKinematics,
-                 frc::Rotation2d(units::radian_t{m_gyro.GetAngle()}),
-                 {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
-                  m_rearLeft.GetPosition(), m_rearRight.GetPosition()},
-                 frc::Pose2d{}} {}
-
-/*void SwerveDrive::Periodic() {
-  // Implementation of subsystem periodic method goes here.
-  m_odometry.Update(frc::Rotation2d(units::radian_t{m_gyro.GetAngle()}),
-                    {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
-                     m_frontRight.GetPosition(), m_rearRight.GetPosition()});
-}*/
+                  kRearRightChassisAngularOffset} {}
 
 void SwerveDrive::Drive(units::meters_per_second_t xSpeed,
                            units::meters_per_second_t ySpeed,
-                           units::radians_per_second_t rot, bool fieldRelative,
+                           units::radians_per_second_t rot,
+                           units::degree_t heading,
                            bool rateLimit) {
   double xSpeedCommanded;
   double ySpeedCommanded;
@@ -107,11 +96,9 @@ void SwerveDrive::Drive(units::meters_per_second_t xSpeed,
       m_currentRotation * DriveConstants::kMaxAngularSpeed;
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
-      fieldRelative
-          ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-                xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                frc::Rotation2d(units::radian_t{m_gyro.GetAngle()}))
-          : frc::ChassisSpeeds{xSpeedDelivered, ySpeedDelivered, rotDelivered});
+      frc::ChassisSpeeds::FromFieldRelativeSpeeds(
+          xSpeedDelivered, ySpeedDelivered, rotDelivered,
+          frc::Rotation2d(units::radian_t{heading})));
 
   kDriveKinematics.DesaturateWheelSpeeds(&states, DriveConstants::kMaxSpeed);
 
@@ -149,22 +136,4 @@ void SwerveDrive::ResetEncoders() {
   m_rearLeft.ResetEncoders();
   m_frontRight.ResetEncoders();
   m_rearRight.ResetEncoders();
-}
-
-units::degree_t SwerveDrive::GetHeading() const {
-  return frc::Rotation2d(units::radian_t{m_gyro.GetAngle()}).Degrees();
-}
-
-void SwerveDrive::ZeroHeading() { m_gyro.Reset(); }
-
-double SwerveDrive::GetTurnRate() { return -m_gyro.GetRate().value(); }
-
-frc::Pose2d SwerveDrive::GetPose() { return m_odometry.GetPose(); }
-
-void SwerveDrive::ResetOdometry(frc::Pose2d pose) {
-  m_odometry.ResetPosition(
-      GetHeading(),
-      {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
-       m_rearLeft.GetPosition(), m_rearRight.GetPosition()},
-      pose);
 }

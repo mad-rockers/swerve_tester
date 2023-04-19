@@ -4,16 +4,14 @@
 
 #pragma once
 
-#include <frc/ADIS16470_IMU.h>
 #include <frc/filter/SlewRateLimiter.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/kinematics/SwerveDriveOdometry.h>
 
-#include "Constants.h"
-#include "MAXSwerveModule.h"
+#include "swerve_system/Constants.h"
+#include "swerve_system/MAXSwerveModule.h"
 
 class SwerveDrive {
  public:
@@ -32,8 +30,10 @@ class SwerveDrive {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   void Drive(units::meters_per_second_t xSpeed,
-             units::meters_per_second_t ySpeed, units::radians_per_second_t rot,
-             bool fieldRelative, bool rateLimit);
+             units::meters_per_second_t ySpeed,
+             units::radians_per_second_t rot,
+             units::degree_t heading = 0_deg,
+             bool rateLimit = true);
 
   /**
    * Sets the wheels into an X formation to prevent movement.
@@ -49,39 +49,6 @@ class SwerveDrive {
    * Sets the drive MotorControllers to a power from -1 to 1.
    */
   void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
-
-  /**
-   * Returns the heading of the robot.
-   *
-   * @return the robot's heading in degrees, from 180 to 180
-   */
-  units::degree_t GetHeading() const;
-
-  /**
-   * Zeroes the heading of the robot.
-   */
-  void ZeroHeading();
-
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  double GetTurnRate();
-
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
-  frc::Pose2d GetPose();
-
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
-  void ResetOdometry(frc::Pose2d pose);
 
   frc::SwerveDriveKinematics<4> kDriveKinematics{
       frc::Translation2d{DriveConstants::kWheelBase / 2,
@@ -99,9 +66,6 @@ class SwerveDrive {
   MAXSwerveModule m_frontRight;
   MAXSwerveModule m_rearRight;
 
-  // The gyro sensor
-  frc::ADIS16470_IMU m_gyro;
-
   // Slew rate filter variables for controlling lateral acceleration
   double m_currentRotation = 0.0;
   double m_currentTranslationDir = 0.0;
@@ -112,8 +76,4 @@ class SwerveDrive {
   frc::SlewRateLimiter<units::scalar> m_rotLimiter{
       DriveConstants::kRotationalSlewRate / 1_s};
   double m_prevTime = wpi::Now() * 1e-6;
-
-  // Odometry class for tracking robot pose
-  // 4 defines the number of modules
-  frc::SwerveDriveOdometry<4> m_odometry;
 };
