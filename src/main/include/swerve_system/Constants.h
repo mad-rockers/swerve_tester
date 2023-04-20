@@ -112,7 +112,3 @@ constexpr rev::CANSparkMax::IdleMode kTurningMotorIdleMode =
 constexpr units::ampere_t kDrivingMotorCurrentLimit = 50_A;
 constexpr units::ampere_t kTurningMotorCurrentLimit = 20_A;
 }  // namespace ModuleConstants
-
-namespace OIConstants {
-constexpr int kDriverControllerPort = Ports::drivercontroller;
-}  // namespace OIConstants
