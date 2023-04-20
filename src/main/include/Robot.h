@@ -16,12 +16,12 @@
 
 class Robot : public frc::TimedRobot {
  public:
-  CustomController drivercontroller;
+  CustomController r_driver;
   SwerveDrive drivetrain;
   ADIS16470_IMU gyro;
 
   Robot() :
-  drivercontroller(Ports::drivercontroller) 
+  r_driver(Ports::r_driver) 
   {}
 
   void RobotInit() override;

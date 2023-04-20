@@ -30,21 +30,21 @@ void Robot::AutonomousPeriodic() {}
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  if(drivercontroller.GetLeftBumper()) {
+  if(r_driver.GetLeftBumper()) {
     drivetrain.SetX();
   }
   else {
     drivetrain.Drive(
-      drivercontroller.GetLeftX(),
-      drivercontroller.GetLeftY(),
-      drivercontroller.GetRightX(),
+      -r_driver.GetLeftX(),
+      -r_driver.GetLeftY(),
+      -r_driver.GetRightX(),
       //gyro.GetAngle());
       0_deg,
       false);
   }
 
-  if(drivercontroller.GetRightBumper()) {
-    while(drivercontroller.GetRightBumper()) {}
+  if(r_driver.GetRightBumper()) {
+    while(r_driver.GetRightBumper()) {}
     gyro.Reset();
   }
 }
