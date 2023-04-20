@@ -24,9 +24,9 @@ SwerveDrive::SwerveDrive()
       m_rearRight{kRearRightDrivingCanId, kRearRightTurningCanId,
                   kRearRightChassisAngularOffset} {}
 
-void SwerveDrive::Drive(units::meters_per_second_t xSpeed,
-                           units::meters_per_second_t ySpeed,
-                           units::radians_per_second_t rot,
+void SwerveDrive::Drive(double xSpeed,
+                           double ySpeed,
+                           double rot,
                            units::degree_t heading,
                            bool rateLimit) {
   double xSpeedCommanded;
@@ -34,9 +34,9 @@ void SwerveDrive::Drive(units::meters_per_second_t xSpeed,
 
   if (rateLimit) {
     // Convert XY to polar for rate limiting
-    double inputTranslationDir = atan2(ySpeed.value(), xSpeed.value());
+    double inputTranslationDir = atan2(ySpeed, xSpeed);
     double inputTranslationMag =
-        sqrt(pow(xSpeed.value(), 2) + pow(ySpeed.value(), 2));
+        sqrt(pow(xSpeed, 2) + pow(ySpeed, 2));
 
     // Calculate the direction slew rate based on an estimate of the lateral
     // acceleration
@@ -79,12 +79,12 @@ void SwerveDrive::Drive(units::meters_per_second_t xSpeed,
 
     xSpeedCommanded = m_currentTranslationMag * cos(m_currentTranslationDir);
     ySpeedCommanded = m_currentTranslationMag * sin(m_currentTranslationDir);
-    m_currentRotation = m_rotLimiter.Calculate(rot.value());
+    m_currentRotation = m_rotLimiter.Calculate(rot);
 
   } else {
-    xSpeedCommanded = xSpeed.value();
-    ySpeedCommanded = ySpeed.value();
-    m_currentRotation = rot.value();
+    xSpeedCommanded = xSpeed;
+    ySpeedCommanded = ySpeed;
+    m_currentRotation = rot;
   }
 
   // Convert the commanded speeds into the correct units for the drivetrain
@@ -129,6 +129,15 @@ void SwerveDrive::SetModuleStates(
   m_frontRight.SetDesiredState(desiredStates[1]);
   m_rearLeft.SetDesiredState(desiredStates[2]);
   m_rearRight.SetDesiredState(desiredStates[3]);
+}
+
+wpi::array<frc::SwerveModuleState, 4> SwerveDrive::GetModuleStates() {
+  return {
+    m_frontLeft.GetState(),
+    m_frontRight.GetState(),
+    m_rearLeft.GetState(),
+    m_rearRight.GetState()
+  };
 }
 
 void SwerveDrive::ResetEncoders() {

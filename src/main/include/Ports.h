@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Ports {
     //USB
     const int drivercontroller = 0;

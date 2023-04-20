@@ -25,13 +25,12 @@ class SwerveDrive {
    *                      (forward/backwards).
    * @param ySpeed        Speed of the robot in the y direction (sideways).
    * @param rot           Angular rate of the robot.
-   * @param fieldRelative Whether the provided x and y speeds are relative to
-   *                      the field.
+   * @param heading       Current heading of the robot.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
-  void Drive(units::meters_per_second_t xSpeed,
-             units::meters_per_second_t ySpeed,
-             units::radians_per_second_t rot,
+  void Drive(double xSpeed,
+             double ySpeed,
+             double rot,
              units::degree_t heading = 0_deg,
              bool rateLimit = true);
 
@@ -49,6 +48,13 @@ class SwerveDrive {
    * Sets the drive MotorControllers to a power from -1 to 1.
    */
   void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
+
+  /**
+   * Get the states of the swerve modules.
+   * 
+   * @return An array with the module states.
+  */
+  wpi::array<frc::SwerveModuleState, 4> GetModuleStates();
 
   frc::SwerveDriveKinematics<4> kDriveKinematics{
       frc::Translation2d{DriveConstants::kWheelBase / 2,

@@ -9,7 +9,19 @@
 
 void Robot::RobotInit() {}
 
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+  SmartDashboard::PutNumber("Gyro Angle", double(gyro.GetAngle()));
+
+  auto [fl, fr, bl, br] = drivetrain.GetModuleStates();
+  SmartDashboard::PutNumber("Front Left Drive", double(fl.speed));
+  SmartDashboard::PutNumber("Front Left Steer", double(fl.angle.Degrees()));
+  SmartDashboard::PutNumber("Front Right Drive", double(fr.speed));
+  SmartDashboard::PutNumber("Front Right Steer", double(fr.angle.Degrees()));
+  SmartDashboard::PutNumber("Back Left Drive", double(bl.speed));
+  SmartDashboard::PutNumber("Back Left Steer", double(bl.angle.Degrees()));
+  SmartDashboard::PutNumber("Back Right Drive", double(br.speed));
+  SmartDashboard::PutNumber("Back Right Steer", double(br.angle.Degrees()));
+}
 
 void Robot::AutonomousInit() {}
 
@@ -17,7 +29,25 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {}
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  if(drivercontroller.GetLeftBumper()) {
+    drivetrain.SetX();
+  }
+  else {
+    drivetrain.Drive(
+      drivercontroller.GetLeftX(),
+      drivercontroller.GetLeftY(),
+      drivercontroller.GetRightX(),
+      //gyro.GetAngle());
+      0_deg,
+      false);
+  }
+
+  if(drivercontroller.GetRightBumper()) {
+    while(drivercontroller.GetRightBumper()) {}
+    gyro.Reset();
+  }
+}
 
 void Robot::DisabledInit() {}
 

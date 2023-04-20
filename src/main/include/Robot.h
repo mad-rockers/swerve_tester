@@ -8,9 +8,22 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/ADIS16470_IMU.h>
+
+#include "Ports.h"
+#include "CustomController.h"
+#include "swerve_system/SwerveDrive.h"
 
 class Robot : public frc::TimedRobot {
  public:
+  CustomController drivercontroller;
+  SwerveDrive drivetrain;
+  ADIS16470_IMU gyro;
+
+  Robot() :
+  drivercontroller(Ports::drivercontroller) 
+  {}
+
   void RobotInit() override;
   void RobotPeriodic() override;
   void AutonomousInit() override;
